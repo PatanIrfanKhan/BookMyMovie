@@ -3,6 +3,8 @@ package com.example.BookMyMovie.Service;
 import com.example.BookMyMovie.Entity.Ticket;
 import com.example.BookMyMovie.Entity.User;
 import com.example.BookMyMovie.Repository.TicketsRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,8 @@ import java.util.Arrays;
 
 @Service
 public class BookTicketService {
+
+    Logger logger= LoggerFactory.getLogger(BookTicketService.class);
 
     @Autowired
     private TicketsRepository ticketsRepository;
@@ -51,12 +55,16 @@ public class BookTicketService {
 //    }
 public Ticket createTicket(String userid,Ticket ticket)
 {
+    logger.info("Ticket Generation started in service");
     User user=userService.getUserById(userid);
+    logger.info("User in service: {}",user);
     ticket.setUserid(userid);
 //    ticket.setSeats(Arrays.asList("Diamond - A23","Diamond - A24"));
     ticketsRepository.save(ticket);
+    logger.info("Ticket created in service: {}",ticket);
     user.getMyTickets().add(ticket);
     userService.saveUser(user);
+    logger.info("Ticket added to user  : {} and ticket is {}",user,ticket);
     return ticket;
 }
 }

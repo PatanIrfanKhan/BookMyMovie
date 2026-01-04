@@ -1,9 +1,6 @@
 spring:
   application:
     name: BookMyMovie
-  config:
-    import: "optional:file:.env[.properties]"
-
   data:
     mongodb:
       host: localhost

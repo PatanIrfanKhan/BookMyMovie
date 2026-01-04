@@ -3,6 +3,8 @@ package com.example.BookMyMovie.Service;
 import com.example.BookMyMovie.Entity.Ticket;
 import com.example.BookMyMovie.Entity.User;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -23,6 +25,8 @@ public class KafkaService {
    @Autowired
    private UserService userService;
 
+   Logger logger= LoggerFactory.getLogger(KafkaService.class);
+
    @KafkaListener(topics = "User-Login-OTP",groupId = "User-Login-Service")
     public void loginWithOTP(User user)
     {
@@ -36,14 +40,17 @@ public class KafkaService {
     @KafkaListener(topics = "User-Welcome-Message",groupId = "User-Login-Service")
     public void sendWelcomeMessage(User user)
     {
+        logger.info("sending welcome message in mail");
         String subject="Welcome to BookMyMovie";
         String message=" Thank you for choosing BookMyMovie! \n\n Your user id is : "+user.getId()+" \n Your username is " +user.getUsername()+" \n\nBook Your Tickets on BookMyMovie for your favourite movie and have fun!";
         emailService.sendMail(user.getEmail(),subject,message);
+        logger.info("Welcome message sent via mail!");
     }
 
     @KafkaListener(topics = "Ticket-Booking-Details",groupId = "Booking-Details")
     public void sendBookingDetails(Ticket ticket)
     {
+        logger.info("Sending ticket details via service");
         String subject="Movie Ticket Booking Confirmation";
         String message="Thank you for choosing and booking the movie Tickets on BookMyMovie here are your ticket detials.\n\n" +
                 "Your Ticket id : "+ticket.getTicketid()+"\n"+
@@ -56,5 +63,6 @@ public class KafkaService {
                 "\nThank You Once Again for choosing BookMyMovieApp and Enjoy the Movie!!!";
         String useremail=userService.getUserById(ticket.getUserid()).getEmail();
         emailService.sendMail(useremail,subject,message);
+        logger.info("Ticket sent to email!");
     }
 }

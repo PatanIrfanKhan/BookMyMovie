@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
+<Configuration status="TRACE">
 
-    <appender name="SPLUNK" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
-        <url>http://localhost:8088</url>
-        <token>d9629097-6fad-4e87-8e6e-55e5bf0fb1e4</token>
-        <index>book_my_movie_apis</index>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5level [%t] %c - %msg%n"/>
+        </Console>
 
-        <batch_size_count>1</batch_size_count>
-        <send_mode>sequential</send_mode>
+        <SplunkHttp name="springbootlogs"
+                    url="http://localhost:8088/services/collector/event"
+                    token="25a06551-ea93-4b1a-8df5-648af6df6f3d"
+                    index="spring_logs_dev"
+                    source="BookMyMovieApp"
+                    sourcetype="log4j"
+                    disableCertificateValidation="true">
+            <PatternLayout pattern="%d %-5level [%t] %c - %msg%n"/>
+        </SplunkHttp>
 
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%msg</pattern>
-        </layout>
-    </appender>
+    </Appenders>
 
-    <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="SPLUNK" />
-    </root>
-</configuration>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="springbootlogs"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
